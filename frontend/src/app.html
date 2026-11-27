@@ -1,0 +1,74 @@
+<header class="topbar">
+  <div class="brand"><span class="brand-icon">◆</span><strong>NeuroForge <em>Nexus</em></strong><small>Team workspace</small></div>
+  <div class="account"><span>Signed in as <b>{{ username }}</b></span><button class="ghost" (click)="logout()">Log out</button></div>
+</header>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-label">WORKSPACE</div>
+    <select *ngIf="workspaces.length" [ngModel]="current?.id" (ngModelChange)="selectWorkspaceById($event)" aria-label="Choose workspace">
+      <option *ngFor="let w of workspaces" [ngValue]="w.id">{{w.name}}</option>
+    </select>
+    <div class="sidebar-label top-gap">NAVIGATION</div>
+    <button class="nav-link" [class.selected]="activeTab === 'projects'" (click)="activeTab='projects'">▦ <span>Projects</span></button>
+    <button class="nav-link" [class.selected]="activeTab === 'board'" (click)="activeTab='board'" [disabled]="!selectedProject">▤ <span>Kanban board</span></button>
+    <button class="nav-link" [class.selected]="activeTab === 'list'" (click)="activeTab='list'" [disabled]="!selectedProject">☷ <span>Task list</span></button>
+    <button class="nav-link" [class.selected]="activeTab === 'planning'" (click)="activeTab='planning'" [disabled]="!selectedProject">▦ <span>Planning</span></button>
+    <button class="nav-link" [class.selected]="activeTab === 'team'" (click)="activeTab='team'">♙ <span>Team & access</span></button>
+    <div class="sidebar-label top-gap">LATER MILESTONES</div>
+    <div class="nav-coming">⚙ CI/CD pipelines <span>Milestone 3</span></div>
+    <div class="nav-coming">◉ Releases & monitor <span>Milestone 4</span></div>
+    <div class="sidebar-note">Company-specific access is checked by the Java backend, not only by this menu.</div>
+  </aside>
+  <main>
+    <div class="page-head">
+      <div><div class="eyebrow">NEUROFORGE / {{ current?.name || 'GET STARTED' }}</div><h1>{{current ? current.name : 'Welcome to NeuroForge'}}</h1><p>{{current ? 'Manage your projects and the people working on them.' : 'Create a workspace for your company or join one using an invitation.'}}</p></div>
+      <span class="role-chip" *ngIf="current">{{current.role.replaceAll('_',' ')}}</span>
+    </div>
+    <div class="alert error" *ngIf="error">{{error}}</div>
+    <div class="alert success" *ngIf="notice">{{notice}} <button class="dismiss" (click)="notice=''">×</button></div>
+    <section class="onboarding" *ngIf="!current">
+      <div class="card"><h2>Create a company workspace</h2><p>You'll be Admin of this workspace. Other companies will have separate workspaces.</p>
+        <label>Workspace / company name</label><input [(ngModel)]="companyName" placeholder="Example: BrightTech Solutions" maxlength="120"/>
+        <button (click)="createWorkspace()" [disabled]="busy || !companyName.trim()">Create workspace</button>
+      </div>
+      <div class="card"><h2>Join an existing workspace</h2><p>Ask your company's Admin for a one-time invitation code.</p>
+        <label>Invitation code</label><input [(ngModel)]="joinCode" placeholder="Paste invitation code"/>
+        <button (click)="joinWorkspace()" [disabled]="busy || !joinCode.trim()">Join workspace</button>
+      </div>
+    </section>
+    <ng-container *ngIf="current">
+      <div *ngIf="activeTab === 'projects'">
+        <div class="stats"><div class="stat"><span>Total Projects</span><b>{{projects.length}}</b></div><div class="stat"><span>Team Members</span><b>{{members.length}}</b></div><div class="stat"><span>Your Access</span><b class="role-text">{{current.role.replaceAll('_',' ')}}</b></div></div>
+        <div class="section-line"><div><h2>Projects</h2><p>Select a project to open its tasks and planning board.</p></div><button *ngIf="canManage" (click)="showProjectForm=!showProjectForm">{{showProjectForm?'Cancel':'+ New project'}}</button></div>
+        <form *ngIf="showProjectForm && canManage" class="card project-form" (ngSubmit)="createProject()">
+          <h3>New project</h3><label>Project name</label><input name="projectName" required maxlength="120" [(ngModel)]="projectName" placeholder="College Management Website"/>
+          <label>Description</label><textarea name="projectDescription" [(ngModel)]="projectDescription" maxlength="1000" placeholder="What will the team build?"></textarea>
+          <button type="submit" [disabled]="busy || !projectName.trim()">{{busy?'Saving...':'Save project'}}</button>
+        </form>
+        <div class="project-grid" *ngIf="projects.length"><button class="project-card" *ngFor="let p of projects" (click)="openProject(p)">
+          <div class="project-card-top"><span class="project-symbol">▣</span><span class="pill">{{p.status}}</span></div>
+          <h3>{{p.name}}</h3><p>{{p.description || 'No description yet'}}</p><span class="open-label">Open project →</span>
+        </button></div>
+        <div class="empty card" *ngIf="!projects.length">No projects in this workspace yet. {{canManage?'Create the first one above.':'Ask a Project Manager to create one.'}}</div>
+      </div>
+      <div *ngIf="activeTab === 'board' || activeTab === 'list' || activeTab === 'planning'">
+        <div class="section-line"><div><h2>{{selectedProject?.name}}</h2><p>Tasks for this project only</p></div><button class="outline" (click)="activeTab='projects'">← Projects</button></div>
+        <div class="tabs"><button [class.active]="activeTab==='board'" (click)="activeTab='board'">Board</button><button [class.active]="activeTab==='list'" (click)="activeTab='list'">List</button><button [class.active]="activeTab==='planning'" (click)="activeTab='planning'">Planning</button></div>
+        <form *ngIf="canManage" class="task-form card" (ngSubmit)="createTask()"><div class="field"><label>Task title</label><input name="taskName" required maxlength="140" [(ngModel)]="taskName" placeholder="Build login page"/></div><div class="field"><label>Assigned to (name)</label><input name="taskAssignee" [(ngModel)]="taskAssignee" maxlength="80" placeholder="developer"/></div><div class="field"><label>Due date</label><input type="date" name="taskDue" [(ngModel)]="taskDue"/></div><button [disabled]="busy || !taskName.trim()">Add task</button></form>
+        <div class="board" *ngIf="activeTab==='board'"><div class="board-column" *ngFor="let stage of stages"><div class="board-head"><b>{{stageName(stage)}}</b><span>{{stageTasks(stage).length}}</span></div>
+          <div class="task-card" *ngFor="let t of stageTasks(stage)"><b>{{t.title}}</b><small>{{t.assignee || 'Unassigned'}}</small><small *ngIf="t.dueDate">Due {{t.dueDate}}</small><select *ngIf="canMoveTask" [ngModel]="t.stage" (ngModelChange)="moveTask(t,$event)" aria-label="Change task stage"><option *ngFor="let s of stages" [value]="s">{{stageName(s)}}</option></select></div><p class="board-empty" *ngIf="!stageTasks(stage).length">No tasks yet</p>
+        </div></div>
+        <div *ngIf="activeTab==='list'" class="card table-wrap"><table><thead><tr><th>Task</th><th>Assigned to</th><th>Due date</th><th>Stage</th></tr></thead><tbody><tr *ngFor="let t of tasks"><td>{{t.title}}</td><td>{{t.assignee || 'Unassigned'}}</td><td>{{t.dueDate || '—'}}</td><td><span class="pill">{{stageName(t.stage)}}</span></td></tr><tr *ngIf="!tasks.length"><td colspan="4">No tasks have been added.</td></tr></tbody></table></div>
+        <div *ngIf="activeTab==='planning'" class="card"><h3>Due-date plan</h3><p class="muted">A simple schedule grouped by task due date. A full interactive Gantt chart can be added later.</p><div class="timeline-item" *ngFor="let t of dueTasks()"><span>{{t.dueDate}}</span><b>{{t.title}}</b><small>{{t.assignee || 'Unassigned'}}</small></div><p *ngIf="!dueTasks().length">Add due dates to tasks to see the plan.</p></div>
+      </div>
+      <div *ngIf="activeTab === 'team'">
+        <div class="section-line"><div><h2>Team & access</h2><p>Roles are assigned per company workspace.</p></div></div>
+        <div class="card table-wrap"><table><thead><tr><th>Username</th><th>Workspace role</th></tr></thead><tbody><tr *ngFor="let m of members"><td>{{m.username}}</td><td><span class="pill">{{m.role.replaceAll('_',' ')}}</span></td></tr></tbody></table></div>
+        <div class="card" *ngIf="canInvite"><h3>Invite a team member</h3><p>Choose the access level before generating a code.</p><label>Role</label><select [(ngModel)]="invitationRole"><option *ngFor="let r of roles" [value]="r">{{r.replaceAll('_',' ')}}</option></select><button (click)="createInvite()" [disabled]="busy">Generate invitation</button>
+          <div class="invite-result" *ngIf="inviteCode"><b>One-time invitation code (valid 24 hours)</b><code>{{inviteCode}}</code><p>Share privately. The member registers through Keycloak, signs in and selects Join workspace.</p></div>
+        </div>
+      </div>
+    </ng-container>
+    <footer>NeuroForge Nexus · Local learning build · Authentication by Keycloak · API by Spring Boot</footer>
+  </main>
+</div>
