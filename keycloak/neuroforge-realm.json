@@ -1,0 +1,44 @@
+{
+  "realm": "neuroforge",
+  "enabled": true,
+  "displayName": "NeuroForge Nexus",
+  "registrationAllowed": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "roles": {
+    "realm": [
+      {
+        "name": "ADMIN"
+      },
+      {
+        "name": "PROJECT_MANAGER"
+      },
+      {
+        "name": "DEVELOPER"
+      },
+      {
+        "name": "TESTER"
+      },
+      {
+        "name": "DEVOPS_ENGINEER"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "neuroforge-web",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://localhost:4200/*"
+      ],
+      "webOrigins": [
+        "http://localhost:4200"
+      ],
+      "protocol": "openid-connect"
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+/* NeuroForge Nexus — simple student-friendly login theme.
+   Extends Keycloak v2 so that registration, reset-password and error
+   handling continue to use Keycloak's secure built-in forms. */
+:root {
+  color-scheme: light;
+  --nf-blue: #3267d6;
+  --nf-dark: #25334c;
+  --nf-border: #dce3ef;
+  --nf-muted: #6b778b;
+}
+html, body, body.login-pf, .login-pf-page {
+  background: #f5f7fb !important;
+  background-image: none !important;
+  color: var(--nf-dark) !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  min-height: 100%;
+}
+/* Keep one small form card, on desktop and mobile. */
+.pf-v5-c-login, .pf-v5-c-login__container,
+.pf-v5-c-login__main, #kc-content-wrapper {
+  background-image: none !important;
+}
+.pf-v5-c-login__container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 16px;
+}
+.pf-v5-c-login__main, .card-pf {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff !important;
+  border: 1px solid var(--nf-border) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 28px rgba(29, 48, 84, .06) !important;
+  margin: 0 auto !important;
+  overflow: hidden;
+}
+.pf-v5-c-login__main-header, .pf-v5-c-login__main-body,
+.pf-v5-c-login__main-footer, #kc-content {
+  background: #ffffff !important;
+}
+.pf-v5-c-login__main-header {padding: 27px 30px 5px !important;}
+.pf-v5-c-login__main-body {padding: 17px 30px 26px !important;}
+.pf-v5-c-login__main-footer {padding: 0 30px 24px !important;}
+#kc-header, #kc-header-wrapper {display: none !important;}
+#kc-page-title, .pf-v5-c-login__main-header h1, h1#kc-page-title {
+  color: var(--nf-dark) !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 23px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.4px;
+  text-align: center;
+  margin: 0 0 14px !important;
+}
+#kc-form, #kc-form-wrapper {width: 100%;}
+.pf-v5-c-form__label, label {
+  font-size: 13px !important;
+  color: #34445d !important;
+  font-weight: 600 !important;
+}
+input[type=text], input[type=email], input[type=password],
+input[type=tel], .pf-v5-c-form-control input {
+  width: 100%;
+  color: var(--nf-dark) !important;
+  background: white !important;
+  border: 1px solid var(--nf-border) !important;
+  border-radius: 8px !important;
+  min-height: 42px;
+  padding: 9px 11px;
+  box-shadow: none !important;
+  font-size: 14px;
+}
+input:focus { outline: 2px solid rgba(50,103,214,.18) !important; outline-offset: 0; border-color: var(--nf-blue) !important; }
+.pf-v5-c-form-control {border-radius: 8px !important; box-shadow: none !important;}
+.pf-v5-c-form-control::before, .pf-v5-c-form-control::after {border: none !important;}
+#kc-login, input[type=submit], .pf-v5-c-button.pf-m-primary,
+button[type=submit] {
+  width: 100%;
+  background: var(--nf-blue) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  min-height: 43px;
+  padding: 10px 18px !important;
+  font-weight: 600 !important;
+  font-size: 14px;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+#kc-login:hover, input[type=submit]:hover, .pf-v5-c-button.pf-m-primary:hover {
+  background: #2657bd !important;
+}
+a {color: var(--nf-blue) !important; text-decoration: none;}
+a:hover {text-decoration: underline;}
+#kc-registration, #kc-info, .pf-v5-c-login__main-footer-band,
+#kc-form-options {font-size: 13px;}
+#kc-info-wrapper {background: white !important; text-align: center;}
+#kc-social-providers {margin-top: 12px;}
+.pf-v5-c-alert {border-radius: 8px; font-size: 13px;}
+@media (max-width: 500px) {
+  .pf-v5-c-login__container {padding: 16px 12px;}
+  .pf-v5-c-login__main-header {padding: 24px 20px 0 !important;}
+  .pf-v5-c-login__main-body {padding: 14px 20px 20px !important;}
+  .pf-v5-c-login__main-footer {padding: 0 20px 20px !important;}
+}
