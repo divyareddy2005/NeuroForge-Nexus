@@ -1,0 +1,22 @@
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+backend/target/
+.env
+.idea/
+.vscode/
+# Secrets and database exports
+.env
+.env.*
+!.env.example
+*.sql
+*.dump
+*.bak
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.zip
+.DS_Store
